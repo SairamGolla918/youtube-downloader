@@ -1,214 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Downloader</title>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: grey;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background: #ffffff;
-            padding: 40px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            width: 100%;
-            max-width: 450px;
-            box-sizing: border-box;
-            position: relative;
-        }
-        h2 {
-            margin-top: 0;
-            color: #333333;
-            font-size: 28px;
-            text-align: center;
-            font-weight: 400;
-            border-bottom: 2px solid #f3f4f6;
-            padding-bottom: 10px;
-        }
-        .form-group {
-            margin-bottom: 25px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #666666;
-            font-weight: 500;
-        }
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            box-sizing: border-box;
-            border: 2px solid #dddddd;
-            border-radius: 8px;
-            font-size: 16px;
-            background-color: #fafafa;
-            color: #333333;
-            transition: border-color 0.3s;
-        }
-        .form-group input:focus,
-        .form-group select:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-        .form-group button {
-            background-color: #007bff;
-            color: #ffffff;
-            padding: 12px 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 8px;
-            font-size: 16px;
-            width: 100%;
-            transition: background-color 0.3s;
-        }
-        .form-group button:hover {
-            background-color: #0056b3;
-        }
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>YouTube Downloader</title>
+ <style>
+     body {
+         font-family: 'Roboto', sans-serif;
+         margin: 0;
+         padding: 0;
+         background-color: grey;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         height: 100vh;
+     }
+     .container {
+         background: #ffffff;
+         padding: 40px;
+         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+         border-radius: 12px;
+         width: 100%;
+         max-width: 450px;
+         box-sizing: border-box;
+         position: relative;
+     }
+     h2 {
+         margin-top: 0;
+         color: #333333;
+         font-size: 28px;
+         text-align: center;
+         font-weight: 400;
+         border-bottom: 2px solid #f3f4f6;
+         padding-bottom: 10px;
+     }
+     .form-group {
+         margin-bottom: 25px;
+     }
+     .form-group label {
+         display: block;
+          margin-bottom: 8px;
+         color: #666666;
+         font-weight: 500;
+     }
+     .form-group input,
+     .form-group select {
+         width: 100%;
+         padding: 12px;
+         box-sizing: border-box;
+         border: 2px solid #dddddd;
+         border-radius: 8px;
+         font-size: 16px;
+         background-color: #fafafa;
+         color: #333333;
+         transition: border-color 0.3s;
+     }
+     .form-group input:focus,
+     .form-group select:focus {
+         border-color: #007bff;
+         outline: none;
+     }
+     .form-group button {
+         background-color: #007bff;
+         color: #ffffff;
+         padding: 12px 20px;
+         border: none;
+         cursor: pointer;
+         border-radius: 8px;
+         font-size: 16px;
+         width: 100%;
+         transition: background-color 0.3s;
+     }
+     .form-group button:hover {
+         background-color: #0056b3;
+     }
 
-        /* Spinner CSS */
-        .spinner {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 16px solid #f3f3f3; /* Light grey */
-            border-top: 16px solid #3498db; /* Blue */
-            border-radius: 50%;
-            width: 120px;
-            height: 120px;
-            animation: spin 2s linear infinite;
-        }
+     /* Spinner CSS */
+     .spinner {
+         display: none;
+         position: absolute;
+         top: 50%;
+          left: 50%;
+         transform: translate(-50%, -50%);
+         border: 16px solid #f3f3f3; /* Light grey */
+         border-top: 16px solid #3498db; /* Blue */
+         border-radius: 50%;
+         width: 120px;
+         height: 120px;
+         animation: spin 2s linear infinite;
+     }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+     @keyframes spin {
+         0% { transform: translate(-50%, -50%) rotate(0deg); }
+         100% { transform: translate(-50%, -50%) rotate(360deg); }
+     }
 
-        /* Progress Bar CSS */
-        .progress-container {
-            width: 100%;
-            background: #f3f3f3;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-top: 20px;
-        }
+     .loading-message {
+         display: none;
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+         text-align: center;
+         color: #3498db;
+         font-size: 18px;
+     }
 
-        .progress-bar {
-            height: 30px;
-            width: 0;
-            background: #3498db;
-            transition: width 0.4s ease;
-        }
+     /* Progress Bar CSS
+     .progress-container {
+         width: 100%;
+         background-color: #f3f3f3;
+         border-radius: 8px;
+         overflow: hidden;
+         margin-top: 20px;
+     }
 
-        .loading-message {
-            font-size: 20px;
-            margin-top: 20px;
-            color: #333;
-            text-align: center;
-            display: none;
-        }
-    </style>
+     .progress-bar {
+         width: 0;
+         height: 20px;
+         background-color: #3498db;
+         transition: width 0.3s;
+     } */
+
+     .download-link {
+         display: none;
+         margin-top: 20px;
+         text-align: center;
+     }
+     .download-link a {
+         display: inline-block;
+         padding: 12px 20px;
+         background: linear-gradient(45deg, #ff416c, #ff4b2b);
+         color: white;
+         text-decoration: none;
+         font-size: 16px;
+         font-weight: bold;
+         border-radius: 50px;
+         box-shadow: 0 4px 15px rgba(255, 65, 108, 0.75);
+         transition: all 0.3s ease;
+         position: relative;
+         overflow: hidden;
+     }
+     .download-link a:hover {
+         box-shadow: 0 6px 20px rgba(255, 65, 108, 0.85);
+     }
+     .download-link a::before {
+         content: '';
+         position: absolute;
+         top: -50%;
+         left: -50%;
+         width: 200%;
+         height: 200%;
+         background: linear-gradient(60deg, rgba(255, 65, 108, 0.5), rgba(255, 75, 43>
+         transition: opacity 0.3s ease;
+         border-radius: 50%;
+         opacity: 0;
+         z-index: 0;
+     }
+     .download-link a:hover::before {
+         opacity: 1;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+     }
+     .download-link a span {
+         position: relative;
+         z-index: 1;
+     }
+ </style>
 </head>
 <body>
-    <div class="container">
-        <h2>YouTube Downloader</h2>
-        <form id="downloadForm" action="download.php" method="post">
-            <div class="form-group">
-                <label for="url">YouTube URL:</label>
-                <input type="text" id="url" name="url" required>
-            </div>
-            <div class="form-group">
-                <label for="quality">Select Quality:</label>
-                <select id="quality" name="quality" required>
-                    <option value="1080p">1080p</option>
-                    <option value="720p">720p</option>
-                    <option value="480p">480p</option>
-                    <option value="360p">360p</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <button type="submit">Download</button>
-            </div>
-            <div class="spinner" id="spinner"></div>
-            <div class="progress-container" id="progressContainer">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <div class="loading-message" id="loadingMessage">Downloading, please wait...</div>
-        </form>
-    </div>
+ <div class="container">
+     <h2>Download YouTube Video</h2>
+     <form id="downloadForm">
+         <div class="form-group">
+             <label for="url">YouTube URL:</label>
+             <input type="url" id="url" name="url" required>
+         </div>
+         <div class="form-group">
+             <label for="quality">Select Quality:</label>
+             <select id="quality" name="quality" required>
+                 <option value="1080p">1080p</option>
+                 <option value="720p">720p</option>
+                 <option value="480p">480p</option>
+                 <option value="360p">360p</option>
+             </select>
+         </div>
+         <div class="form-group">
+             <button type="submit">Select Quality and Start Download</button>
+         </div>
+     </form>
+     <div class="spinner" id="spinner"></div>
+     <div class="loading-message" id="loadingMessage">Downloading...</div>
+     <!-- <div class="progress-container" id="progressContainer">
+         <div class="progress-bar" id="progressBar"></div>
+     </div> -->
+     <div class="download-link" id="downloadLink"></div>
+ </div>
+ <script>
+     document.getElementById('downloadForm').addEventListener('submit',
+     function(even(event) {
+         event.preventDefault();
 
-    <script>
-        document.getElementById('downloadForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-           // const spinner = document.getElementById('spinner');
-            const loadingMessage = document.getElementById('loadingMessage');
-            const progressBar = document.getElementById('progressBar');
+         const form = event.target;
+         const formData = new FormData(form);
 
-           // spinner.style.display = 'block';
-            loadingMessage.style.display = 'block';
-            progressBar.style.width = '0%';
+         // Show spinner and loading message
+         document.getElementById('spinner').style.display = 'block';
+         document.getElementById('loadingMessage').style.display = 'block';
 
-            const formData = new FormData(this);
+         fetch('/download.php', {
+             method: 'POST',
+             body: formData
+         })
+         .then(response => response.json())
+         .then(data => {
+             if (data.status === 'processing') {
+                 const pid = data.pid;
+                 const file = data.file;
+                 checkProgress(pid, file);
+             } else {
+                 console.error('Error:', data.message);
+             }
+         })
+         .catch(error => console.error('Error:', error));
+     });
 
-            fetch('download.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'processing') {
-                    const pid = data.pid;
-                    checkProgress(pid);
-                } else {
-                    spinner.style.display = 'none';
-                    loadingMessage.textContent = 'Error starting download.';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                spinner.style.display = 'none';
-                loadingMessage.textContent = 'An error occurred.';
-            });
-        });
+     function checkProgress(pid, file) {
+         /* const progressContainer = document.getElementById('progressContainer');
+         const progressBar = document.getElementById('progressBar'); */
+         const downloadLink = document.getElementById('downloadLink');
 
-        function checkProgress(pid) {
-            fetch(`download.php?pid=${pid}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'processing') {
-                    const progress = data.progress;
-                    const message = data.message;
-                    document.getElementById('progressBar').style.width = progress + '%';
-                    document.getElementById('loadingMessage').textContent = message;
-
-                    setTimeout(() => checkProgress(pid), 1000); // Check progress every second
-                } else if (data.status === 'completed') {
-                    document.getElementById('spinner').style.display = 'none';
-                    document.getElementById('loadingMessage').textContent = data.message;
-                    document.getElementById('progressBar').style.width = '100%';
-                } else {
-                    document.getElementById('spinner').style.display = 'none';
-                    document.getElementById('loadingMessage').textContent = 'An error occurred.';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('spinner').style.display = 'none';
-                document.getElementById('loadingMessage').textContent = 'An error occurred.';
-            });
-        }
-    </script>
+         fetch(`/download.php?pid=${pid}&file=${file}`)
+         .then(response => response.json())
+         .then(data => {
+             if (data.status === 'completed') {
+                 document.getElementById('spinner').style.display = 'none';
+                 document.getElementById('loadingMessage').style.display = 'none';
+                 downloadLink.style.display = 'block';
+                 downloadLink.innerHTML = `<a href="${data.url}" download><span>Download ${file}</span></a>`;
+             } else if (data.status === 'processing') {
+                 const progress = data.progress;
+                 /* progressBar.style.width = `${progress}%`; */
+                 setTimeout(() => checkProgress(pid, file), 1000);
+             } else {
+                 console.error('Error:', data.message);
+             }
+         })
+         .catch(error => console.error('Error:', error));
+     }
+ </script>
 </body>
 </html>
+
+
+
 
