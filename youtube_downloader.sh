@@ -1,68 +1,53 @@
 #!/bin/bash
 
-# Get the parameters
-url=$1
-quality=$2
+URL=$1
+QUALITY=$2
+OUTPUT_DIR="/var/www/html/videos"
+LOG_FILE="/var/www/html/yt_downloader_debug.log"
 
-# Set the format based on the user's choice
-case $quality in
+# Log the user running the script
+echo "Script executed by user: $(whoami)" >> "$LOG_FILE"
+echo "Starting download script at $(date)" >> "$LOG_FILE"
+
+# Ensure output directory exists
+mkdir -p "$OUTPUT_DIR"
+
+# Clear existing media files in the output directory
+rm -f "$OUTPUT_DIR"/*.mp4
+rm -f "$OUTPUT_DIR"/*.webm
+
+# Set the format based on the requested quality
+case $QUALITY in
     "1080p")
-        format="bestvideo[height<=1080]+bestaudio/best[height<=1080]"
+        FORMAT="bestvideo[height<=1080]+bestaudio/best[height<=1080]"
         ;;
     "720p")
-        format="bestvideo[height<=720]+bestaudio/best[height<=720]"
+        FORMAT="bestvideo[height<=720]+bestaudio/best[height<=720]"
         ;;
     "480p")
-        format="bestvideo[height<=480]+bestaudio/best[height<=480]"
+        FORMAT="bestvideo[height<=480]+bestaudio/best[height<=480]"
         ;;
     "360p")
-        format="bestvideo[height<=360]+bestaudio/best[height<=360]"
+        FORMAT="bestvideo[height<=360]+bestaudio/best[height<=360]"
         ;;
     *)
-        echo "Invalid option, defaulting to best quality."
-        format="best"
+        FORMAT="best"
         ;;
 esac
 
-# Define the download directory and current date
-download_dir="/var/www/Downloads"
-current_date=$(date +%Y-%m-%d)
-yt_dl_dir="/var/www/yt-dl"
-progress_file="/tmp/yt_download_progress_$$.txt"
+# Construct the output file name
+OUTPUT_FILE="$OUTPUT_DIR/video"
 
-# Download the video and write progress to the file
-yt-dlp -f "$format" -o "$download_dir/%(title)s.%(ext)s" "$url" --newline | while IFS= read -r line; do
-    echo "$line" >> "$progress_file"
-done
+# Download the video using yt-dlp
 
-# Get the downloaded file path
-downloaded_file=$(yt-dlp --get-filename -o "$download_dir/%(title)s.%(ext)s" "$url")
+yt-dlp -f "$FORMAT" -o "$OUTPUT_FILE" "$URL" 2>> "$LOG_FILE"
 
-# Check if the directory with the current date exists in yt-dl, if not, create it
-if [ ! -d "$yt_dl_dir/$current_date" ]; then
-    mkdir -p "$yt_dl_dir/$current_date"
+# Check if the download was successful
+if [ $? -eq 0 ]; then
+    echo "Downloaded video to $OUTPUT_FILE" >> "$LOG_FILE"
+    echo "Video saved as: $(basename "$OUTPUT_FILE")"
+else
+    echo "Error: Video download failed" >> "$LOG_FILE"
+    cat "$LOG_FILE"
 fi
 
-# Move the downloaded video to the directory with the current date
-mv "$downloaded_file" "$yt_dl_dir/$current_date/"
-
-# Get video details
-video_title=$(yt-dlp --get-title "$url")
-file_size=$(du -h "$yt_dl_dir/$current_date/$(basename "$downloaded_file")" | cut -f1)
-download_date=$(date +%Y-%m-%d)
-file_location="$yt_dl_dir/$current_date/$(basename "$downloaded_file")"
-
-# Append video details to list.txt
-{
-    echo "Title: $video_title"
-    echo "File: $(basename "$downloaded_file")"
-    echo "Size: $file_size"
-    echo "Download Date: $download_date"
-    echo "Location: $file_location"
-    echo "------------------------------------"
-} >> "$yt_dl_dir/list.txt"
-
-# Clean up progress file
-rm "$progress_file"
-
-echo "Download completed successfully."
